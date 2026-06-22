@@ -3,15 +3,23 @@ import { randomUUID } from "crypto";
 import { promises as fs } from "fs";
 import path from "path";
 import { put } from "@vercel/blob";
-import { isOwner } from "@/lib/owner";
+import { currentGroup } from "@/lib/groups";
 
 export const dynamic = "force-dynamic";
 
-// Owner-gated photo upload. Uses Vercel Blob in prod (unguessable random URLs);
-// falls back to public/uploads locally so the flow works without provisioning.
-// The client downscales before sending, so payloads stay well under the limit.
+// Any unlocked group may upload (for their own notes). Uses Vercel Blob in prod
+// (unguessable random URLs); falls back to public/uploads locally so the flow
+// works without provisioning. The client downscales before sending.
+//
+// Blob auth: the modern integration uses OIDC — put() resolves credentials from
+// BLOB_STORE_ID + the runtime-injected VERCEL_OIDC_TOKEN (no static token). We
+// also accept a legacy BLOB_READ_WRITE_TOKEN if one is ever set.
+const blobConfigured = !!(
+  process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN
+);
+
 export async function POST(req: Request) {
-  if (!(await isOwner())) {
+  if (!(await currentGroup())) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
   const form = await req.formData();
@@ -24,7 +32,7 @@ export async function POST(req: Request) {
     "jpg";
   const name = `${randomUUID()}.${ext}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  if (blobConfigured) {
     const blob = await put(`notes/${name}`, file, {
       access: "public",
       addRandomSuffix: true,

@@ -1,6 +1,7 @@
 // ────────────────────────────────────────────────────────────────────────────
-// THE itinerary — the one file to edit. Sourced from Sha'Meaka's Canva guide
-// ("Brendan & Sha'Meaka's European Vacation", Jun 23 – Jul 5, 2026).
+// THE itinerary — the one file to edit. The Paris days follow The Parlour's
+// official "Paris Phase Trip" doc (Phase Directors, Jun 24–28); the UK / NL /
+// Italy legs + bookend travel days are Brendan & Sha'Meaka's extension.
 //
 // `date`     — ISO yyyy-mm-dd, the calendar day we're at this location
 // `lat/lon`  — the exact spot to forecast
@@ -57,7 +58,7 @@ export type Stop = {
 // order here — both are derived from the ordered itinerary (lib/trip.ts).
 export type Country = { name: string; short: string; accent: string };
 
-export const TRIP_NAME = "Our European Vacation";
+export const TRIP_NAME = "Paris Phase Trip";
 export const TRIP_SUBTITLE = "Paris · London · Amsterdam · Puglia";
 
 // Harmonized to sit under the warm cream / wine / terracotta base — still
@@ -119,45 +120,64 @@ export const itinerary: Stop[] = [
     plan: [
       { time: "13:00", title: "Land at CDG — Delta from Denver", kind: "flight" },
       {
-        time: "14:30",
-        title: "RER B + Metro 8 → Hôtel du Cadran",
-        note: "~60 min from the airport",
-        kind: "subway",
+        time: "15:00",
+        title: "Check in at Hôtel du Cadran",
+        note: "Use the Parlour Uber account for airport transfers · check-in 3 PM",
+        kind: "car",
       },
-      { time: "17:15", title: "Meet in the lobby", kind: "misc" },
-      { time: "18:00", title: "Dinner at Pink Mama", kind: "food" },
-      { time: "21:00", title: "Moulin Rouge show", kind: "show" },
+      {
+        time: "17:15",
+        title: "Meet in the lobby — share Ubers to dinner",
+        note: "Save your receipts to be reimbursed",
+        kind: "misc",
+      },
+      {
+        time: "18:00",
+        title: "Dinner at Pink Mamma",
+        note: "~30-min car ride · 5-min walk to the show after",
+        kind: "food",
+      },
+      {
+        time: "21:00",
+        title: "Moulin Rouge show",
+        note: "Fancy night — dress up! Head back at your leisure after",
+        kind: "show",
+      },
     ],
   },
   {
     id: "versailles",
     city: "Versailles",
     country: "France",
-    label: "Day trip from Paris",
+    label: "Bike & walking tours",
     lat: 48.8049,
     lon: 2.1204,
     timezone: "Europe/Paris",
     date: "2026-06-25",
     accent: ACCENT.versailles,
     plan: [
-      { time: "07:00", title: "Breakfast at the hotel", kind: "food" },
+      { time: "07:00", title: "Breakfast on your own", kind: "food" },
       {
-        time: "07:45",
-        title: "Train from Gare Saint-Lazare",
-        note: "Arrive 15 min early — the train won't wait!",
-        kind: "train",
-      },
-      {
-        time: "11:00",
-        title: "Bike the Versailles market — cheese & baguettes",
+        time: "07:15",
+        title: "Bike-tour group: walk to the meet-up (≈45 min)",
+        note: "Guide is at the Starbucks at 2 Rue de la Pépinière (corner of Rue Pasquier), just outside Gare Saint-Lazare — there are 4 nearby, this is the one outside the station. Be 15 min early — the train to Versailles won't wait!",
         kind: "bike",
       },
-      { time: "12:30", title: "Picnic on the Grand Canal lawns", kind: "outdoors" },
-      { time: "14:30", title: "Grand Trianon & the Queen's Hamlet", kind: "sight" },
-      { time: "18:30", title: "Train back to Paris", kind: "train" },
       {
-        time: "20:00",
-        title: "Latin Quarter — Rue Mouffetard, dinner on your own",
+        time: "07:45",
+        title: "Or meet in the lobby to take a car to the meet-up",
+        note: "Share an Uber to the same Starbucks spot.",
+        kind: "car",
+      },
+      {
+        time: "09:40",
+        title: "Walking-tour group: meet at Café Pierre Hermé",
+        note: "Pl. de la Résistance · 3–3.5 hr tour · no large bags · Viator conf 1757097937",
+        kind: "walk",
+      },
+      {
+        title: "Dinner on your own",
+        note: "Gene is gifting each Phase Director meal money",
         kind: "food",
       },
     ],
@@ -173,43 +193,73 @@ export const itinerary: Stop[] = [
     date: "2026-06-26",
     accent: ACCENT.paris,
     plan: [
-      { time: "08:15", title: "Ubers to the Wella studio", kind: "car" },
-      { time: "09:00", title: "Wella class", kind: "misc" },
       {
-        time: "13:00",
-        title: "Brendan free: Le Marais & Rue Saint-Honoré",
-        kind: "shopping",
+        time: "08:15",
+        title: "Meet in the lobby — share Ubers to the Wella studio",
+        note: "~30-min drive · save your receipts",
+        kind: "car",
       },
-      { time: "16:00", title: "Wrap up + back to the hotel", kind: "misc" },
-      { time: "19:00", title: "Dinner at La Terrasse du 7", kind: "food" },
+      {
+        time: "09:00",
+        title: "Wella class — all Phase Directors",
+        note: "9 AM – 4 PM",
+        kind: "misc",
+      },
+      {
+        title: "Partner free time",
+        note: "Explore Paris while the class is in session (until ~4 PM)",
+        kind: "walk",
+      },
+      {
+        time: "18:45",
+        title: "Meet in the lobby — 5-min walk to dinner",
+        kind: "misc",
+      },
+      {
+        time: "19:00",
+        title: "Dinner at La Terrasse du 7",
+        note: "Pre-selected menu · 2 place de l'École Militaire",
+        kind: "food",
+      },
     ],
   },
   {
     id: "paris-eiffel",
     city: "Paris",
     country: "France",
-    label: "Louvre, Eiffel & river cruise",
-    lat: 48.86,
-    lon: 2.3376, // Louvre
+    label: "Eiffel Tower + river cruise",
+    lat: 48.8584,
+    lon: 2.2945, // Eiffel Tower
     timezone: "Europe/Paris",
     date: "2026-06-27",
     accent: ACCENT.paris,
     plan: [
-      { time: "08:00", title: "Uber to the Louvre", kind: "car" },
+      { title: "Free day on your own until 4 PM", kind: "outdoors" },
       {
-        time: "09:00",
-        title: "Louvre — Mona Lisa, Venus de Milo",
-        note: "3-hr self-guided, booked tickets",
-        kind: "sight",
+        time: "16:00",
+        title: "Meet in the lobby — 15-min walk to the Eiffel Tower tour",
+        note: "Meet-up: 41 Av. de la Bourdonnais · exchange vouchers for tickets — do NOT be late",
+        kind: "walk",
       },
       {
-        time: "12:30",
-        title: "Musée Rodin garden — The Thinker, The Kiss",
+        time: "16:45",
+        title: "Eiffel Tower tour",
+        note: "1.5 hrs · ends ~6:15 PM · Get Your Guide",
         kind: "sight",
       },
-      { time: "13:45", title: "Lunch near Rue de Varenne", kind: "food" },
-      { time: "16:45", title: "Eiffel Tower tour", kind: "sight" },
-      { time: "20:20", title: "Dinner + DJ river cruise (3.5 hrs)", kind: "boat" },
+      { title: "Free time until dinner", kind: "misc" },
+      {
+        time: "20:20",
+        title: "Meet in the lobby SHARP — walk to the boat",
+        note: "Meet-up: 2 Rue du Ranelagh · follow the Diamant Bleu flags to the end of the pier",
+        kind: "walk",
+      },
+      {
+        time: "20:30",
+        title: "Dinner + DJ river cruise",
+        note: "3.5 hrs · Viator conf 1751773043",
+        kind: "boat",
+      },
     ],
   },
   {

@@ -1,6 +1,6 @@
 {
-  "name": "Our European Vacation",
-  "short_name": "Euro Vacation",
+  "name": "Paris Phase Trip",
+  "short_name": "Phase Trip",
   "description": "Our trip, day by day — forecast + plans for Paris, Versailles, London, Amsterdam & Bari.",
   "start_url": "/",
   "display": "standalone",

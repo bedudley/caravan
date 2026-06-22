@@ -15,13 +15,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Our European Vacation",
+  title: "Paris Phase Trip",
   description:
     "Our trip, day by day — forecast + plans for Paris, Versailles, London, Amsterdam & Bari.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "Euro Vacation",
+    title: "Phase Trip",
     statusBarStyle: "default",
   },
 };

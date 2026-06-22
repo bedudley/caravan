@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, ArrowRight, Copy, Check } from "lucide-react";
+import CaravanMark from "@/components/CaravanMark";
 
 type Done = { name: string; groupCode?: string };
 
@@ -128,8 +129,11 @@ export default function JoinPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-6 py-12">
       <div className="rounded-card border border-line bg-card p-6">
+        <div className="mb-4">
+          <CaravanMark />
+        </div>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-faint">
-          Our European Vacation
+          Paris Phase Trip
         </p>
         <h1 className="mt-1 font-display text-3xl text-wine">Join the trip</h1>
 

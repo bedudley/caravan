@@ -14,6 +14,8 @@ import UnitToggle from "./UnitToggle";
 import LiveClock from "./LiveClock";
 import NotesSection from "./NotesSection";
 import BoardLink from "./BoardLink";
+import EditableTripTitle from "./EditableTripTitle";
+import CaravanMark from "./CaravanMark";
 
 type Entry = { stop: Stop; forecast: Forecast | null };
 type Status = "before" | "during" | "after";
@@ -58,11 +60,14 @@ export default function TripBoard({
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 pb-16 pt-6 sm:pt-10">
+      {/* Caravan platform mark — the trip title below is the content hero */}
+      <div className="mb-5">
+        <CaravanMark />
+      </div>
+
       <header className="mb-6 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="font-display text-2xl text-wine sm:text-3xl">
-            {tripName}
-          </h1>
+          <EditableTripTitle initial={tripName} />
           <p className="text-sm text-muted">{subtitle}</p>
           <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-accent">
             {statusLine}
@@ -146,7 +151,11 @@ export default function TripBoard({
       </div>
 
       <footer className="mt-10 text-center text-xs text-faint">
-        Weather by Open‑Meteo · refreshes every 30 min
+        <p className="font-display text-sm text-muted">Caravan</p>
+        <p className="mt-1.5">
+          Created by Brendan Dudley &amp; Sha&apos;Meaka King | © 2026
+        </p>
+        <p className="mt-1.5">Weather by Open‑Meteo · refreshes every 30 min</p>
       </footer>
     </div>
   );

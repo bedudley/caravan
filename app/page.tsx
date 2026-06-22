@@ -1,6 +1,7 @@
-import { itinerary, TRIP_NAME, TRIP_SUBTITLE } from "@/data/itinerary";
+import { itinerary, TRIP_SUBTITLE } from "@/data/itinerary";
 import { getAllForecasts } from "@/lib/forecasts";
 import { getTripStatus, orderedCountries } from "@/lib/trip";
+import { getTripTitle } from "@/lib/trip-meta";
 import TripBoard from "@/components/TripBoard";
 
 export const revalidate = 1800;
@@ -11,10 +12,11 @@ export default async function Home() {
 
   const { todayIndex, status, featuredIndex, daysUntil } = getTripStatus();
   const countries = orderedCountries();
+  const tripName = await getTripTitle();
 
   return (
     <TripBoard
-      tripName={TRIP_NAME}
+      tripName={tripName}
       subtitle={TRIP_SUBTITLE}
       stops={stops}
       featuredIndex={featuredIndex}

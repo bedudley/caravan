@@ -14,6 +14,7 @@ import UnitToggle from "./UnitToggle";
 import LiveClock from "./LiveClock";
 import NotesSection from "./NotesSection";
 import BoardLink from "./BoardLink";
+import EditLink from "./EditLink";
 import EditableTripTitle from "./EditableTripTitle";
 import CaravanMark from "./CaravanMark";
 
@@ -80,7 +81,10 @@ export default function TripBoard({
           )}
         </div>
         <div className="flex flex-col items-end gap-2">
-          <BoardLink />
+          <div className="flex items-center gap-2">
+            <EditLink />
+            <BoardLink />
+          </div>
           <UnitToggle unit={unit} onToggle={toggle} />
         </div>
       </header>

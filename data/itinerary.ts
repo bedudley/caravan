@@ -14,31 +14,21 @@
 // and "Heading home" (London→Denver) travel days, with full flight details.
 // ────────────────────────────────────────────────────────────────────────────
 
+export const KIND_VALUES = [
+  // getting around
+  "flight", "train", "subway", "bus", "car", "walk", "bike", "boat", "layover",
+  // doing things
+  "food", "drinks", "sight", "show", "shopping", "outdoors", "lodging",
+  "travel", // generic fallback
+  "misc",
+] as const;
+export type ActivityKind = (typeof KIND_VALUES)[number];
+
 export type Activity = {
   time?: string; // "09:30" 24h local; omit for all-day / flexible items
   title: string;
   note?: string;
-  kind?:
-    // getting around
-    | "flight"
-    | "train"
-    | "subway"
-    | "bus"
-    | "car"
-    | "walk"
-    | "bike"
-    | "boat"
-    | "layover"
-    // doing things
-    | "food"
-    | "drinks"
-    | "sight"
-    | "show"
-    | "shopping"
-    | "outdoors"
-    | "lodging"
-    | "travel" // generic fallback
-    | "misc";
+  kind?: ActivityKind; // picks the icon (see components/KindIcon.tsx)
 };
 
 export type Stop = {
@@ -51,6 +41,7 @@ export type Stop = {
   timezone: string;
   date: string;
   accent: string;
+  locked?: boolean; // part of the shared owner-curated core (France); group-read-only
   plan?: Activity[];
 };
 
@@ -109,6 +100,7 @@ export const itinerary: Stop[] = [
   },
   {
     id: "paris-arrival",
+    locked: true,
     city: "Paris",
     country: "France",
     label: "Arrival + Moulin Rouge",
@@ -147,6 +139,7 @@ export const itinerary: Stop[] = [
   },
   {
     id: "versailles",
+    locked: true,
     city: "Versailles",
     country: "France",
     label: "Bike & walking tours",
@@ -184,6 +177,7 @@ export const itinerary: Stop[] = [
   },
   {
     id: "paris-wella",
+    locked: true,
     city: "Paris",
     country: "France",
     label: "Wella class",
@@ -225,6 +219,7 @@ export const itinerary: Stop[] = [
   },
   {
     id: "paris-eiffel",
+    locked: true,
     city: "Paris",
     country: "France",
     label: "Eiffel Tower + river cruise",

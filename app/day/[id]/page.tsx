@@ -1,14 +1,11 @@
 import { notFound } from "next/navigation";
-import { itinerary } from "@/data/itinerary";
 import { adjacentStops, dateInTz, findStop } from "@/lib/trip";
 import { getForecast } from "@/lib/forecasts";
+import { resolveItinerary } from "@/lib/itinerary";
+import { currentGroup } from "@/lib/groups";
 import DayView from "@/components/DayView";
 
-export const revalidate = 1800;
-
-export function generateStaticParams() {
-  return itinerary.map((s) => ({ id: s.id }));
-}
+export const dynamic = "force-dynamic"; // per-group itinerary depends on the cookie
 
 export default async function DayPage({
   params,
@@ -16,11 +13,14 @@ export default async function DayPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const stop = findStop(id);
+  const group = await currentGroup();
+  const stops = await resolveItinerary(group);
+
+  const stop = findStop(stops, id);
   if (!stop) notFound();
 
   const forecast = await getForecast(stop);
-  const { prev, next } = adjacentStops(id);
+  const { prev, next } = adjacentStops(stops, id);
   const isToday = stop.date === dateInTz(stop.timezone);
 
   return (

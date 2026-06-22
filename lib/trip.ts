@@ -1,9 +1,4 @@
-import {
-  itinerary,
-  countries,
-  type Country,
-  type Stop,
-} from "@/data/itinerary";
+import { countries, type Country, type Stop } from "@/data/itinerary";
 
 const MS_PER_DAY = 86_400_000;
 
@@ -26,12 +21,13 @@ export type TripStatus = {
 };
 
 /** Where are we in the trip right now (each stop judged in its own timezone)? */
-export function getTripStatus(): TripStatus {
-  const todayIndex = itinerary.findIndex(
-    (s) => s.date === dateInTz(s.timezone),
-  );
+export function getTripStatus(stops: Stop[]): TripStatus {
+  if (stops.length === 0) {
+    return { todayIndex: -1, status: "before", featuredIndex: -1, daysUntil: 0 };
+  }
+  const todayIndex = stops.findIndex((s) => s.date === dateInTz(s.timezone));
 
-  const first = itinerary[0];
+  const first = stops[0];
   const daysUntil = Math.round(
     (Date.parse(first.date) - Date.parse(dateInTz(first.timezone))) / MS_PER_DAY,
   );
@@ -45,28 +41,31 @@ export function getTripStatus(): TripStatus {
   return {
     todayIndex: -1,
     status: "after",
-    featuredIndex: itinerary.length - 1,
+    featuredIndex: stops.length - 1,
     daysUntil,
   };
 }
 
-export function findStop(id: string): Stop | undefined {
-  return itinerary.find((s) => s.id === id);
+export function findStop(stops: Stop[], id: string): Stop | undefined {
+  return stops.find((s) => s.id === id);
 }
 
-export function stopIndex(id: string): number {
-  return itinerary.findIndex((s) => s.id === id);
+export function stopIndex(stops: Stop[], id: string): number {
+  return stops.findIndex((s) => s.id === id);
 }
 
 /** Previous / next stop in itinerary order (for day-to-day nav). */
-export function adjacentStops(id: string): { prev?: Stop; next?: Stop } {
-  const i = stopIndex(id);
+export function adjacentStops(
+  stops: Stop[],
+  id: string,
+): { prev?: Stop; next?: Stop } {
+  const i = stopIndex(stops, id);
   if (i < 0) return {};
-  return { prev: itinerary[i - 1], next: itinerary[i + 1] };
+  return { prev: stops[i - 1], next: stops[i + 1] };
 }
 
-export function stopsByCountry(name: string): Stop[] {
-  return itinerary.filter((s) => s.country === name);
+export function stopsByCountry(stops: Stop[], name: string): Stop[] {
+  return stops.filter((s) => s.country === name);
 }
 
 const FALLBACK_ACCENT = "#c77d43";
@@ -82,14 +81,14 @@ export type CountrySummary = Country & {
  * metadata and a date range **derived from the stops** — the single source of
  * truth. Countries missing from the `countries` lookup still render sanely.
  */
-export function orderedCountries(): CountrySummary[] {
+export function orderedCountries(stops: Stop[]): CountrySummary[] {
   const seen = new Set<string>();
   const out: CountrySummary[] = [];
-  for (const stop of itinerary) {
+  for (const stop of stops) {
     if (seen.has(stop.country)) continue;
     seen.add(stop.country);
-    const stops = stopsByCountry(stop.country);
-    const dates = stops.map((s) => s.date).sort();
+    const inCountry = stopsByCountry(stops, stop.country);
+    const dates = inCountry.map((s) => s.date).sort();
     const meta = countries.find((c) => c.name === stop.country);
     out.push({
       name: stop.country,
@@ -97,7 +96,7 @@ export function orderedCountries(): CountrySummary[] {
       accent: meta?.accent ?? stop.accent ?? FALLBACK_ACCENT,
       firstDate: dates[0],
       lastDate: dates[dates.length - 1],
-      dayCount: stops.length,
+      dayCount: inCountry.length,
     });
   }
   return out;

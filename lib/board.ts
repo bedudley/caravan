@@ -10,6 +10,7 @@ export type Post = {
   groupId: string;
   author: string;
   text: string;
+  image?: string;
   ts: number;
 };
 
@@ -24,12 +25,14 @@ export async function addPost(
   groupId: string,
   author: string,
   text: string,
+  image?: string,
 ): Promise<Post> {
   const post: Post = {
     id: randomUUID(),
     groupId,
     author,
     text: text.slice(0, 1000),
+    ...(image ? { image } : {}),
     ts: Date.now(),
   };
   const posts = await getPosts();

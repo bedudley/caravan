@@ -10,6 +10,7 @@ import FeaturedStop from "./FeaturedStop";
 import DayTimeline from "./DayTimeline";
 import UnitToggle from "./UnitToggle";
 import NotesSection from "./NotesSection";
+import BoardLink from "./BoardLink";
 
 export default function DayView({
   stop,
@@ -35,7 +36,10 @@ export default function DayView({
         >
           <ChevronLeft size={16} /> Trip
         </Link>
-        <UnitToggle unit={unit} onToggle={toggle} />
+        <div className="flex items-center gap-2">
+          <BoardLink />
+          <UnitToggle unit={unit} onToggle={toggle} />
+        </div>
       </div>
 
       <FeaturedStop entry={{ stop, forecast }} unit={unit} isToday={isToday} />

@@ -22,12 +22,16 @@ export async function POST(req: NextRequest) {
   if (!group) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  const body = (await req.json().catch(() => null)) as { text?: string } | null;
+  const body = (await req.json().catch(() => null)) as {
+    text?: string;
+    image?: string;
+  } | null;
   const text = typeof body?.text === "string" ? body.text.trim() : "";
-  if (!text) {
+  const image = typeof body?.image === "string" ? body.image : undefined;
+  if (!text && !image) {
     return NextResponse.json({ error: "empty" }, { status: 400 });
   }
-  const post = await addPost(group.id, group.name, text);
+  const post = await addPost(group.id, group.name, text, image);
   return NextResponse.json({ post });
 }
 

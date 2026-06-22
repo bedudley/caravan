@@ -1,14 +1,25 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Send, RefreshCw, Trash2, Loader2, Lock } from "lucide-react";
+import {
+  ArrowLeft,
+  Send,
+  RefreshCw,
+  Trash2,
+  Loader2,
+  Lock,
+  ImagePlus,
+} from "lucide-react";
+import PhotoGrid from "@/components/PhotoGrid";
+import { prepUpload } from "@/lib/prepUpload";
 
 type Post = {
   id: string;
   groupId: string;
   author: string;
   text: string;
+  image?: string;
   ts: number;
 };
 type Me = { id: string; owner: boolean };
@@ -29,7 +40,10 @@ export default function BoardPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [me, setMe] = useState<Me | null>(null);
   const [text, setText] = useState("");
+  const [image, setImage] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [posting, setPosting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [code, setCode] = useState("");
   const [unlocking, setUnlocking] = useState(false);
   const [gateErr, setGateErr] = useState(false);
@@ -55,17 +69,33 @@ export default function BoardPage() {
     return () => clearInterval(t);
   }, [load]);
 
+  async function addPhoto(file: File) {
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", await prepUpload(file));
+      const res = await fetch("/api/notes/upload", { method: "POST", body: fd });
+      if (res.ok) {
+        const { url } = (await res.json()) as { url: string };
+        setImage(url);
+      }
+    } finally {
+      setUploading(false);
+    }
+  }
+
   async function post() {
-    if (!text.trim() || posting) return;
+    if ((!text.trim() && !image) || posting) return;
     setPosting(true);
     try {
       const res = await fetch("/api/board", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, image }),
       });
       if (res.ok) {
         setText("");
+        setImage(null);
         await load();
       }
     } finally {
@@ -172,10 +202,32 @@ export default function BoardPage() {
               placeholder="Share something with the group…"
               className="w-full resize-none rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink outline-none focus:border-accent"
             />
-            <div className="mt-2 flex justify-end">
+            {image && (
+              <PhotoGrid images={[image]} onRemove={() => setImage(null)} />
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => e.target.files?.[0] && addPhoto(e.target.files[0])}
+            />
+            <div className="mt-2 flex items-center justify-between">
+              <button
+                onClick={() => fileRef.current?.click()}
+                disabled={uploading}
+                className="flex items-center gap-1.5 rounded-full border border-line bg-paper px-3 py-1.5 text-sm text-ink disabled:opacity-60"
+              >
+                {uploading ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <ImagePlus size={14} />
+                )}
+                Photo
+              </button>
               <button
                 onClick={post}
-                disabled={posting || !text.trim()}
+                disabled={posting || (!text.trim() && !image)}
                 className="flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-sm font-medium text-white disabled:opacity-60"
               >
                 {posting ? (
@@ -202,7 +254,12 @@ export default function BoardPage() {
                     <span className="text-sm font-semibold text-wine">{p.author}</span>
                     <span className="shrink-0 text-xs text-faint">{timeAgo(p.ts)}</span>
                   </div>
-                  <p className="mt-1 whitespace-pre-wrap text-sm text-ink">{p.text}</p>
+                  {p.text && (
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-ink">
+                      {p.text}
+                    </p>
+                  )}
+                  {p.image && <PhotoGrid images={[p.image]} />}
                   {mine && (
                     <button
                       onClick={() => remove(p.id)}

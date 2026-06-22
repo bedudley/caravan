@@ -19,10 +19,6 @@ export const metadata: Metadata = {
   description:
     "Our trip, day by day — forecast + plans for Paris, Versailles, London, Amsterdam & Bari.",
   manifest: "/manifest.webmanifest",
-  icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
-  },
   appleWebApp: {
     capable: true,
     title: "Euro Vacation",

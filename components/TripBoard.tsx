@@ -13,6 +13,7 @@ import StopCard from "./StopCard";
 import UnitToggle from "./UnitToggle";
 import LiveClock from "./LiveClock";
 import NotesSection from "./NotesSection";
+import BoardLink from "./BoardLink";
 
 type Entry = { stop: Stop; forecast: Forecast | null };
 type Status = "before" | "during" | "after";
@@ -73,7 +74,10 @@ export default function TripBoard({
             />
           )}
         </div>
-        <UnitToggle unit={unit} onToggle={toggle} />
+        <div className="flex flex-col items-end gap-2">
+          <BoardLink />
+          <UnitToggle unit={unit} onToggle={toggle} />
+        </div>
       </header>
 
       {featured && (

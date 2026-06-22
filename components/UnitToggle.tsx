@@ -12,19 +12,19 @@ export default function UnitToggle({
   return (
     <button
       onClick={onToggle}
-      className="flex shrink-0 items-center gap-1 rounded-full border border-line bg-card p-1 text-sm font-semibold"
+      className="flex shrink-0 items-center gap-0.5 rounded-full border border-line bg-card p-0.5 text-xs font-medium"
       aria-label={`Switch to ${unit === "F" ? "Celsius" : "Fahrenheit"}`}
     >
       <span
-        className={`rounded-full px-2.5 py-1 transition ${
-          unit === "F" ? "bg-accent text-white" : "text-muted"
+        className={`rounded-full px-2 py-0.5 transition ${
+          unit === "F" ? "bg-line text-ink" : "text-faint"
         }`}
       >
         °F
       </span>
       <span
-        className={`rounded-full px-2.5 py-1 transition ${
-          unit === "C" ? "bg-accent text-white" : "text-muted"
+        className={`rounded-full px-2 py-0.5 transition ${
+          unit === "C" ? "bg-line text-ink" : "text-faint"
         }`}
       >
         °C

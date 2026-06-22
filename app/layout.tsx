@@ -15,6 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://caravanhq.you"),
   title: "Paris Phase Trip",
   description:
     "Our trip, day by day — forecast + plans for Paris, Versailles, London, Amsterdam & Bari.",
@@ -23,6 +24,27 @@ export const metadata: Metadata = {
     capable: true,
     title: "Phase Trip",
     statusBarStyle: "default",
+  },
+  openGraph: {
+    type: "website",
+    url: "https://caravanhq.you",
+    siteName: "Caravan",
+    title: "Paris Phase Trip",
+    description: "Our trip, day by day — forecast, plans, and notes. On Caravan.",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "Paris Phase Trip — on Caravan",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Paris Phase Trip",
+    description: "Our trip, day by day — forecast, plans, and notes. On Caravan.",
+    images: ["/og.png"],
   },
 };
 

@@ -1,0 +1,16 @@
+{
+  "name": "Our European Vacation",
+  "short_name": "Euro Vacation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf5ea",
+  "theme_color": "#b5654a",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

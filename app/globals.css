@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ---- Design tokens (the one place colors/radii live) ----
+   Palette drawn from Sha'Meaka's Canva guide: warm ivory paper, deep oxblood
+   display headings, terracotta-clay accent. */
+@theme {
+  --color-paper: #fbf5ea; /* warm ivory */
+  --color-card: #fffdf8;
+  --color-ink: #3a2f27; /* warm brown — body text */
+  --color-wine: #5b2b29; /* deep oxblood — display headings on light surfaces */
+  --color-muted: #7a6a59;
+  --color-faint: #a89a86;
+  --color-line: #e8ddc9;
+  --color-accent: #b5654a; /* terracotta-clay */
+
+  --radius-card: 1.25rem;
+}
+
+/* Fonts come from next/font at runtime, so they must be inlined */
+@theme inline {
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-inter);
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  background-image:
+    radial-gradient(1100px 560px at 50% -12%, #fff6e4 0%, transparent 60%),
+    radial-gradient(820px 460px at 92% 2%, #fbe6d3 0%, transparent 55%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display), Georgia, "Times New Roman", serif;
+}
+
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line);
+  border-radius: 99px;
+}
+
+/* Hide horizontal scrollbar on the hourly strip but keep it swipeable */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

@@ -12,9 +12,7 @@ import FeaturedStop from "./FeaturedStop";
 import StopCard from "./StopCard";
 import UnitToggle from "./UnitToggle";
 import LiveClock from "./LiveClock";
-import NotesSection from "./NotesSection";
-import BoardLink from "./BoardLink";
-import EditLink from "./EditLink";
+import HeaderNav from "./HeaderNav";
 import EditableTripTitle from "./EditableTripTitle";
 import CaravanMark from "./CaravanMark";
 
@@ -81,10 +79,7 @@ export default function TripBoard({
           )}
         </div>
         <div className="flex flex-col items-end gap-2">
-          <div className="flex items-center gap-2">
-            <EditLink />
-            <BoardLink />
-          </div>
+          <HeaderNav />
           <UnitToggle unit={unit} onToggle={toggle} />
         </div>
       </header>
@@ -94,8 +89,6 @@ export default function TripBoard({
           <FeaturedStop entry={featured} unit={unit} isToday={status === "during"} />
         </Link>
       )}
-
-      <NotesSection scope="trip" />
 
       {/* Country filter */}
       <div className="no-scrollbar mt-7 -mx-4 flex gap-2 overflow-x-auto px-4">

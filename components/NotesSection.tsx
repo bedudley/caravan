@@ -1,19 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  Globe,
-  Lock,
-  Pencil,
-  ImagePlus,
-  Check,
-  Loader2,
-  Plus,
-  UserPlus,
-  Copy,
-  Link2,
-  RefreshCw,
-} from "lucide-react";
+import { Globe, Lock, Pencil, ImagePlus, Check, Loader2, Plus } from "lucide-react";
 import PhotoGrid from "./PhotoGrid";
 import { prepUpload } from "@/lib/prepUpload";
 
@@ -22,6 +10,7 @@ type Group = { id: string; name: string; owner: boolean };
 type Data = { public: Note | null; private: Note | null; group: Group | null };
 type Visibility = "public" | "private";
 
+// Per-day notes: a shared (owner-edited) note + each group's own private note.
 export default function NotesSection({ scope }: { scope: string }) {
   const [data, setData] = useState<Data | null>(null);
   const [showUnlock, setShowUnlock] = useState(false);
@@ -75,7 +64,7 @@ export default function NotesSection({ scope }: { scope: string }) {
   const isOwner = !!group?.owner;
   const hasPublic = !!(data.public?.text || data.public?.images.length);
 
-  // A visitor with nothing to see → just a quiet way in (so owners can unlock).
+  // A visitor with nothing to see → just a quiet way in (so travelers can unlock).
   if (!unlocked && !hasPublic && !showUnlock) {
     return (
       <div className="mt-6 px-1">
@@ -122,21 +111,12 @@ export default function NotesSection({ scope }: { scope: string }) {
 
       <div className="mt-3 px-1">
         {unlocked ? (
-          <div className="flex flex-col gap-3">
-            {/* Owner group-admin lives only on the trip page, not every day */}
-            {isOwner && scope === "trip" && (
-              <>
-                <InvitePanel />
-                <AddGroup />
-              </>
-            )}
-            <button
-              onClick={lock}
-              className="self-start text-xs text-faint transition hover:text-muted"
-            >
-              {isOwner ? "Done editing — lock" : `Unlocked as ${group?.name} — lock`}
-            </button>
-          </div>
+          <button
+            onClick={lock}
+            className="text-xs text-faint transition hover:text-muted"
+          >
+            {isOwner ? "Done editing — lock" : `Unlocked as ${group?.name} — lock`}
+          </button>
         ) : showUnlock ? (
           <div className="flex items-center gap-2">
             <input
@@ -174,233 +154,6 @@ export default function NotesSection({ scope }: { scope: string }) {
         )}
       </div>
     </section>
-  );
-}
-
-/** Owner-only: the shared invite code + the link to share for self-serve joining. */
-function InvitePanel() {
-  const [code, setCode] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [copied, setCopied] = useState(false);
-
-  const load = useCallback(async () => {
-    const res = await fetch("/api/notes/joincode", { cache: "no-store" });
-    if (res.ok) {
-      setCode(((await res.json()) as { joinCode: string | null }).joinCode);
-    }
-    setLoaded(true);
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    load();
-  }, [load]);
-
-  async function save(custom: boolean) {
-    setSaving(true);
-    try {
-      const res = await fetch("/api/notes/joincode", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(custom ? { code: draft.trim() } : {}),
-      });
-      if (res.ok) {
-        setCode(((await res.json()) as { joinCode: string }).joinCode);
-        setEditing(false);
-        setDraft("");
-        setCopied(false);
-      }
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  if (!loaded) return null;
-
-  const link =
-    typeof window !== "undefined" ? `${window.location.origin}/join` : "/join";
-  const shareText = code ? `Join our trip: ${link} — invite code: ${code}` : "";
-
-  return (
-    <div className="rounded-card border border-line bg-card p-3">
-      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-faint">
-        <Link2 size={12} /> Invite others
-      </div>
-
-      {code ? (
-        <>
-          <p className="mt-1.5 text-sm text-ink">
-            Share the link &amp; code so others join with their own private notes.
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-muted">Code:</span>
-            <code className="rounded bg-paper px-2 py-1 font-mono text-accent">
-              {code}
-            </code>
-            <button
-              onClick={() => {
-                navigator.clipboard?.writeText(shareText);
-                setCopied(true);
-              }}
-              className="flex items-center gap-1 text-xs text-muted transition hover:text-ink"
-            >
-              {copied ? <Check size={13} /> : <Copy size={13} />}
-              {copied ? "Copied link + code" : "Copy link + code"}
-            </button>
-          </div>
-        </>
-      ) : (
-        <p className="mt-1.5 text-sm text-muted">
-          No invite code yet — set one to open self-serve joining.
-        </p>
-      )}
-
-      {editing ? (
-        <div className="mt-2 flex items-center gap-2">
-          <input
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && draft.trim() && save(true)}
-            placeholder="e.g. provence26"
-            autoCapitalize="off"
-            className="min-w-0 flex-1 rounded-full border border-line bg-paper px-3 py-1.5 text-sm outline-none focus:border-accent"
-          />
-          <button
-            onClick={() => save(true)}
-            disabled={saving || !draft.trim()}
-            className="shrink-0 rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
-          >
-            {saving ? "…" : "Set"}
-          </button>
-          <button
-            onClick={() => setEditing(false)}
-            className="shrink-0 text-xs text-faint"
-          >
-            cancel
-          </button>
-        </div>
-      ) : (
-        <div className="mt-2 flex items-center gap-3 text-xs">
-          <button
-            onClick={() => {
-              setEditing(true);
-              setDraft(code ?? "");
-            }}
-            className="text-muted transition hover:text-ink"
-          >
-            {code ? "Change code" : "Set invite code"}
-          </button>
-          {code && (
-            <button
-              onClick={() => save(false)}
-              disabled={saving}
-              className="flex items-center gap-1 text-muted transition hover:text-ink disabled:opacity-60"
-            >
-              <RefreshCw size={12} /> Rotate
-            </button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** Owner-only: create a new group and reveal its one-time passcode to share. */
-function AddGroup() {
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [creating, setCreating] = useState(false);
-  const [created, setCreated] = useState<{ name: string; passcode: string } | null>(
-    null,
-  );
-  const [copied, setCopied] = useState(false);
-
-  async function create() {
-    if (!name.trim()) return;
-    setCreating(true);
-    try {
-      const res = await fetch("/api/notes/groups", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim() }),
-      });
-      if (res.ok) {
-        const d = (await res.json()) as {
-          group: { name: string };
-          passcode: string;
-        };
-        setCreated({ name: d.group.name, passcode: d.passcode });
-        setName("");
-      }
-    } finally {
-      setCreating(false);
-    }
-  }
-
-  if (!open) {
-    return (
-      <button
-        onClick={() => {
-          setOpen(true);
-          setCreated(null);
-        }}
-        className="flex items-center gap-1.5 text-xs text-muted transition hover:text-ink"
-      >
-        <UserPlus size={13} /> Add a group
-      </button>
-    );
-  }
-
-  return (
-    <div className="rounded-card border border-line bg-card p-3">
-      <div className="flex items-center gap-2">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && create()}
-          placeholder="Group name (e.g. The Coworkers)"
-          className="min-w-0 flex-1 rounded-full border border-line bg-paper px-3 py-1.5 text-sm outline-none focus:border-accent"
-        />
-        <button
-          onClick={create}
-          disabled={creating || !name.trim()}
-          className="shrink-0 rounded-full bg-accent px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
-        >
-          {creating ? "…" : "Create"}
-        </button>
-        <button onClick={() => setOpen(false)} className="shrink-0 text-xs text-faint">
-          close
-        </button>
-      </div>
-      {created && (
-        <div className="mt-3 rounded-lg border border-line bg-paper p-3 text-sm">
-          <div className="text-ink">
-            <span className="font-medium">{created.name}</span> can unlock with:
-          </div>
-          <div className="mt-1.5 flex items-center gap-2">
-            <code className="rounded bg-card px-2 py-1 font-mono text-accent">
-              {created.passcode}
-            </code>
-            <button
-              onClick={() => {
-                navigator.clipboard?.writeText(created.passcode);
-                setCopied(true);
-              }}
-              className="flex items-center gap-1 text-xs text-muted transition hover:text-ink"
-            >
-              {copied ? <Check size={13} /> : <Copy size={13} />}
-              {copied ? "Copied" : "Copy"}
-            </button>
-          </div>
-          <div className="mt-1.5 text-xs text-faint">
-            Share this with them — it won&apos;t be shown again.
-          </div>
-        </div>
-      )}
-    </div>
   );
 }
 
